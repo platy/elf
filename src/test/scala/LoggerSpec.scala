@@ -25,7 +25,7 @@ class LoggerSpec extends FlatSpec with MockFactory with ShouldMatchers {
 		val log = new Logger(appender)
 		(appender.append _).expects(ProcessEvent("Process", Noun("Thing"), Left("Response")))
 		val subject = Noun("Thing")
-		log.the("Process").of(subject).in(() => "Response")
+		log.the("Process").of(subject).in("Response")
 	}
 
 	it should "log an exception outcome event of the block" in {
@@ -34,6 +34,8 @@ class LoggerSpec extends FlatSpec with MockFactory with ShouldMatchers {
 		val exception = new Exception
 		(appender.append _).expects(ProcessEvent("Process", Noun("Thing"), Right(exception)))
 		val subject = Noun("Thing")
-		log.the("Process").of(subject).in(() => throw exception)
+		intercept[Exception] {
+			log the "Process" of subject in { throw exception }
+		}
 	}
 }

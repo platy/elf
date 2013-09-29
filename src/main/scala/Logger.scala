@@ -18,15 +18,20 @@ class SubjectLogger(eventAppender: EventAppender, subject: Any) {
 }
 
 class VerbLogger(eventAppender: EventAppender, verb: String) {
-	def of(subject: Any) = new BlockProcessLogger(eventAppender, verb, subject)
+	def of(subject: Any): BlockProcessLogger = new BlockProcessLogger(eventAppender, verb, subject)
 }
 
 class BlockProcessLogger(eventAppender: EventAppender, verb: String, subject: Any) {
-	def in(block: () => Any) = eventAppender.append(try {
-		ProcessEvent(verb, subject, Left(block()))
-	} catch {
-		case ex: Throwable => ProcessEvent(verb, subject, Right(ex))
-	})
+	def in[T](block: => T): T  = try {
+			val result: T = block
+			eventAppender.append(ProcessEvent(verb, subject, Left(result)))
+			block
+		} catch {
+			case ex: Throwable => {
+				eventAppender.append(ProcessEvent(verb, subject, Right(ex)))
+				throw ex
+			}
+		}
 }
 
 class Logger(eventAppender: EventAppender) {
