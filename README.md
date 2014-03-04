@@ -51,3 +51,13 @@ API
 
 Currently the oly thing started in this project is a trial at a scala api for the system - I want to see whether
 something like this would be readable and practical.
+
+    val log: Logger
+    log that "Some event happened"            // Basic form of logging
+    val subject                               // Extra context can be taken from this object, you might use a
+                                              // conversion function to specify what data from it should be logged
+    log thatThe subject has "done something"  // Simple event around subject
+    log the "Process" of subject in {         // Logs metrics and result / exception of running block of code
+      doSomething()
+    }
+    
