@@ -53,11 +53,22 @@ Currently the oly thing started in this project is a trial at a scala api for th
 something like this would be readable and practical.
 
     val log: Logger
-    log that "Some event happened"            // Basic form of logging
+    log that "some event happened"            // Basic form of logging
     val subject                               // Extra context can be taken from this object, you might use a
                                               // conversion function to specify what data from it should be logged
     log thatThe subject has "done something"  // Simple event around subject
     log the "Process" of subject in {         // Logs metrics and result / exception of running block of code
       doSomething()
     }
-    
+
+The intention is to deter undescriptive logging and to encourage that a log entry represents an event and not a state - and also to allow collection of context and extra information in a consistent way accross the application.
+
+There's a basic form, `log that <a past tense statement>`. In logs this allows us to say `At 11:30 some event happened`
+
+A simple subjective form, `log thatThe <subject object> has <past tense predicate>` or `log that <a specified subject object> has <past tense predicate>`. In the first, the source subject has the definite article as the symbol will be defined before, both are treated the same by the system as the value name will not be used. The logging statement is a 3rd person singular present perfect statement (plural may be added), and due to the form it would be possible to group statements in output - `Between 4 & 5am 35 customers logged in` or make conditional perfect statements `After they logged in, 60% of customers bought something`.
+
+A process logging form, `log the <name for what block does to object> of <object> in <code block / function>` which can automatically have access to the return value of the block, thrown exception and possibly the execution time of the block. This allows logging to talk about the process as the subject `Logging in of customer 1 failed with NullPointerException` or `Average time taken for logging in customers last week was 50ms`.
+
+We could additionally get the variable names by using compiler macros making them part of the system grammar programmatically as well as in source.
+
+The intention was also to provide a context (such as request / session) through threadlocals but this wouldn't work with futures anyway so I think either we could have implicit contexts or just maybe stick to the clearer explicit subjective contexts.
